@@ -1,31 +1,47 @@
 import React from "react";
-import {BrowserRouter, Route, Routes} from "react-router-dom"; 
+import {Navigate, BrowserRouter, Route, Routes} from "react-router-dom"; 
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import ImagePopup from "./ImagePopup";
 import api from "../utils/Api";
+import useAuth from "../utils/auth";
 import {CurrentUserContext} from "../contexts/CurrentUserContext";
 import {CurrentCard} from "../contexts/CurrentCard";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import Login from "./Login";
+import Register from "./Register";
+import ProtectedRoute from "./ProtectedRoute";
+import InfoTooltip from "./InfoTooltip";
+import success from "../images/success.svg";
+import noSuccess from "../images/noSuccess.svg"
+
 
 function App() {
   const [isEditAvatarClick, setEditAvatarClick] = React.useState(false);
   const [isEditProfileClick, setEditProfileClick] = React.useState(false);
+
   const [isAddPlaceClick, setAddPlaceClick] = React.useState(false);
   const [selectedCard, setselectedCard] = React.useState(null);
+
+  const [isInfoTooltipOpen, setInfoTooltip] = React.useState(false)
 
   const [currentUser, setCurrentUser] = React.useState({});
 
   const [currentCards, setCurrentCards] = React.useState([]);
 
-  //const [loggedIn, setloggedIn] = React.useState(false); // статус пользователя(вошел в систему или нет)
+  const [infoToolTipData, setInfoToolTipData] = React.useState({
+    title: '',
+    image: '',
+  })
+
+  const [isloggedIn, setloggedIn] = React.useState(false); // статус пользователя(вошел в систему или нет)
+  const [isEmailUser, setEmailUser] = React.useState(null);
 
   function handleCardLike(card) {
-    // Снова проверяем, есть ли уже лайк на этой карточке
+    
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
     
     (isLiked
@@ -86,7 +102,56 @@ function handleAddPlaceSubmit(data) {
   })
 }
 
+function onRegister(email, password) {
+  useAuth.registerUser(email, password)
+    .then(() => {
+      setInfoToolTipData({
+        image: success, 
+        title: 'Вы успешно зарегистрировались!',
+      })
+    })
+    .catch((err) => {
+      setInfoToolTipData({
+        image: noSuccess, 
+        title: 'Что-то пошло не так! Попробуйте ещё раз.',
+      })
+      console.log(err);
+    })
+    .finally(handleInfoTooltip)
+}
+
+function onLogin(email, password) {
+  useAuth.loginUser(email, password)
+    .then((res) => {
+      localStorage.setItem('jwt', res.token)
+      setloggedIn(true)
+      setEmailUser(email)
+    })
+    .catch((err) => {
+      setInfoToolTipData({
+        image: success, 
+        title: 'Что-то пошло не так! Попробуйте ещё раз.',
+      })
+      console.log(err);
+      handleInfoTooltip()
+    })
+}
+
+function onLoginOut() {
+  setloggedIn(false)
+  setEmailUser(null)
+  //navigate('/sign-in')
+  localStorage.removeItem('jwt')
+}
+
+// React.useEffect(() => {
+//   if (isloggedIn === true) {
+//     navigate('/')
+//   }
+// }, [isloggedIn, navigate])
+
   React.useEffect(() => {
+    if (isloggedIn) 
     Promise.all([api.getInfoUser(), api.getInitialCards()])
       .then((res) => {
         setCurrentUser(res[0]);
@@ -96,13 +161,14 @@ function handleAddPlaceSubmit(data) {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [isloggedIn]);
 
   const closeAllPopups = () => {
     setEditAvatarClick(false);
     setEditProfileClick(false);
     setAddPlaceClick(false);
     setselectedCard(null);
+    setInfoTooltip(false);
   };
 
   const handleEditAvatarClick = () => {
@@ -121,33 +187,71 @@ function handleAddPlaceSubmit(data) {
     setselectedCard(card);
   };
 
+  const handleInfoTooltip = () => {
+    return setInfoTooltip(!isInfoTooltipOpen)
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <CurrentCard.Provider value={currentCards}>
       <BrowserRouter>
         
       <div className="page">
-      <Header /> 
+        
+        <Routes>
 
-      <Login />
+        <Route
+            path="/sign-in"
+            element={
+              <>
+                <Header title="Регистрация" route="/sign-up" />
+                <Login onLogin={onLogin} />
+              </>
+            }
+          />
+          <Route
+            path="/sign-up"
+            element={
+              <>
+                <Header title="Войти" route="/sign-in" />
+                <Register onRegister={onRegister} />
+              </>
+            }
+          />
 
-      <Routes>
+           <Route
+            exact
+            path="/"
+            element={
+              <>
+                <Header
+                  title="Выйти"
+                  email={isEmailUser}
+                  onClick={onLoginOut}
+                  route=""
+                />
+                <ProtectedRoute
+                  component={Main}
+                  isLogged={isloggedIn}
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onCardClick={handleCardClick}
+                  cards={currentCards}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                />
+                <Footer />
+              </>
+            }
+          />
 
-        <Route path="/" element={
-          <Main 
-          onEditProfile={handleEditProfileClick} 
-          onAddPlace={handleAddPlaceClick} 
-          onEditAvatar={handleEditAvatarClick} 
-          onCardClick={handleCardClick} 
-          onCardLike={handleCardLike} 
-          onCardDelete={handleCardDelete}/>
-          }/>
+          <Route
+            path="*"
+            element={<Navigate to={isloggedIn ? '/' : '/sign-in'} />}
+          />
 
-      <Route path="/sign-up" />
-      <Route path="/sign-in" />
-       </Routes>
-
-      <Footer />
+      </Routes>
 
       <EditProfilePopup 
       isOpen={isEditProfileClick} 
@@ -168,6 +272,13 @@ function handleAddPlaceSubmit(data) {
       card={selectedCard} 
       onCardClick={handleCardClick} 
       onClose={closeAllPopups}/>
+
+      <InfoTooltip
+      image={infoToolTipData.image}
+      title={infoToolTipData.title} 
+      isOpen={isInfoTooltipOpen}
+      onClose={closeAllPopups} 
+      />
 
     </div>
     </BrowserRouter>

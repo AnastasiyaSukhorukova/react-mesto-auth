@@ -1,7 +1,73 @@
-// import React from "react";
+import React, {useState} from "react";
+import {Link, useNavigate} from 'react-router-dom';
+import useAuth from "../utils/auth";
 
-// function Register() {
-//   return(
-    
-//   )
-// }
+function Register(initialValue) {
+
+  const [formValue, setFormValue] = useState(initialValue)
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const {name, value} = e.target;
+
+    setFormValue({
+      ...formValue,
+      [name]: value
+    });
+  }
+
+function handleSubmit(e) {
+  // Запрещаем браузеру переходить по адресу формы
+  e.preventDefault();
+
+  if (formValue.password === formValue.confirmPassword){
+    const {password, email } = formValue;
+    useAuth.registerUser(password, email).then((res) => {
+      navigate('/sign-in', {replace: true});
+      }
+    );
+  }
+}
+
+  return(
+    <section className="login__container">
+      <h2 className="login__title">Регистрация</h2>
+
+      <form className="login__form" onSubmit={handleSubmit}>
+
+      <input 
+        className="login__input"
+        type="email"
+        placeholder="Email"
+        value={formValue.email}
+        onChange={handleChange}
+        required>
+      </input>
+
+      <input
+          className="login__input"
+          type="password"
+          placeholder="Пароль"
+          value={formValue.password}
+          autoComplete="on"
+          minLength="5"
+          onChange={handleChange}
+          required
+        />
+
+        <button 
+        className="login__button"
+        type="submit"
+        onSubmit={handleSubmit}
+        >
+          Зарегистрироваться
+        </button>
+        </form>
+        <p className="login__subtitle">Уже зарегистрированы?
+        <Link to="login" className="login__link"> Войти</Link>
+        </p>
+    </section>
+  )
+}
+
+export default Register;

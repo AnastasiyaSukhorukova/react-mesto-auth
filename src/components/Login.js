@@ -1,53 +1,73 @@
 import React from "react";
-import {CurrentUserContext} from "../contexts/CurrentUserContext";
-import PopupWithForm from "./PopupWithForm";
+import {useNavigate} from 'react-router-dom';
+import useAuth from "../utils/auth";
 
-function Login(props) {
+function Login(initialValue) {
 
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [formValue, setFormValue] = React.useState(initialValue ?? "")
 
-  const currentUser = React.useContext(CurrentUserContext);
+  const handleChange = (e) => {
+    const {name, value} = e.target.value;
 
-// После загрузки текущего пользователя из API
-// его данные будут использованы в управляемых компонентах.
-// также устанавливаем дефолтное значение если данные еще не пришли
+    setFormValue({
+      ...formValue,
+      [name]: value
+    });
+  }
+  
+  const navigate = useNavigate();
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formValue.email || !formValue.password){
+      return;
+    }
+    useAuth.loginUser(formValue.email, formValue.password)
+      .then((data) => {
+      if(data.jwt) {
+        setFormValue({email: '', password: ''});
+        navigate('/', {replace: true});
+      }
+      })
+      .catch(err => console.log(err));
+  }
 
-  React.useEffect(() => {
-      setEmail(currentUser.email ?? "");
-      setPassword(currentUser.password ?? "");
-}, [currentUser]); 
-
-function handleChangeName(e) {
-  setEmail(e.target.value);
-}
-
-function handleChangeDescription(e) {
-  setPassword(e.target.value);
-}
-
-function handleSubmit(e) {
-  // Запрещаем браузеру переходить по адресу формы
-  e.preventDefault();
-
-  // // Передаём значения управляемых компонентов во внешний обработчик
-  // props.onUpdateUser({
-  //   name,
-  //   about
-  // });
-}
 
   return(
-    <PopupWithForm name="login-popup popup_opened" title="Вход" textButton="Войти" onSubmit={handleSubmit}>
-        <div className="popup__input-position">
-          <input className="popup__input popup__name-text popup__input_type_name" id="popup__name" type="text" value={email} onChange={handleChangeName} placeholder="Email" name="email" minLength="2" maxLength="40" required />
-          <span className="popup__input-error popup__name-error"></span>
-        </div>
-        <div className="popup__input-position">
-          <input className="popup__input popup__name-text popup__input_type_job" id="popup__text" type="text" value={password} onChange={handleChangeDescription} placeholder="Пароль" name="password" minLength="2" maxLength="200" required />
-          <span className="popup__input-error popup__text-error"></span>
-        </div>
-    </PopupWithForm>
+    <section className="login__container">
+      <h2 className="login__title">Вход</h2>
+
+      <form className="login__form" onSubmit={handleSubmit}>
+
+      <input 
+        className="login__input"
+        type="email"
+        placeholder="Email"
+        value={formValue.email}
+        onChange={(e) => handleChange(e)}
+        required>
+      </input>
+
+      <input
+          className="login__input"
+          type="password"
+          placeholder="Пароль"
+          value={formValue.password}
+          autoComplete="on"
+          minLength="5"
+          onChange={(e) => handleChange(e)}
+          required
+        />
+
+        <button 
+        className="login__button"
+        type="submit"
+        onSubmit={handleSubmit}
+        >
+          Войти
+        </button>
+        </form>
+    </section>
   )
 }
 
