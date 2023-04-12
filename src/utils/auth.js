@@ -12,21 +12,44 @@ class Auth {
   }
 
   registerUser (email, password) {
-    return fetch(`${this._url}/signup`,{
+    return fetch(`${this._url}/signup`, {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
-      headers: this._headers
+      headers: this._headers,
+      body: JSON.stringify({
+        email,
+        password
+      })
     })
-    .then(this._handleResponse);
-  }
+    .then((response) => {
+      try {
+        if (response.status === 200){
+          return response.json();
+        }
+      } catch(e){
+        return (e)
+      }
+    })
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => console.log(err));
+  }; 
 
   loginUser (email, password) {
     return fetch(`${this._url}/signin`,{
       method: 'POST',
+      headers: this._headers,
       body: JSON.stringify({ email, password }),
-      headers: this._headers
     })
-  }
+    .then((response => response.json()))
+  .then((data) => {
+    if (data.jwt){
+      localStorage.setItem('jwt', data.jwt);
+      return data;
+    }
+  })
+  .catch(err => console.log(err))
+}; 
 
   getToken (jwt) {
     return fetch(`${this._url}/users/me`,{
@@ -36,6 +59,19 @@ class Auth {
         Authorization: `Bearer ${jwt}`,
       },
     })
+    .then((response) => {
+      try {
+        if (response.status === 200){
+          return response.json();
+        }
+      } catch(e){
+        return (e)
+      }
+    })
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => console.log(err));
   }
 }
 

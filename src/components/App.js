@@ -1,5 +1,5 @@
 import React from "react";
-import {Navigate, BrowserRouter, Route, Routes} from "react-router-dom"; 
+import {Navigate, Route, Routes, useNavigate} from "react-router-dom"; 
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -39,6 +39,8 @@ function App() {
 
   const [isloggedIn, setloggedIn] = React.useState(false); // статус пользователя(вошел в систему или нет)
   const [isEmailUser, setEmailUser] = React.useState(null);
+
+  const navigate = useNavigate()
 
   function handleCardLike(card) {
     
@@ -109,6 +111,7 @@ function onRegister(email, password) {
         image: success, 
         title: 'Вы успешно зарегистрировались!',
       })
+      navigate('/sign-in')
     })
     .catch((err) => {
       setInfoToolTipData({
@@ -126,10 +129,11 @@ function onLogin(email, password) {
       localStorage.setItem('jwt', res.token)
       setloggedIn(true)
       setEmailUser(email)
+      navigate('/')
     })
     .catch((err) => {
       setInfoToolTipData({
-        image: success, 
+        image: noSuccess, 
         title: 'Что-то пошло не так! Попробуйте ещё раз.',
       })
       console.log(err);
@@ -140,15 +144,15 @@ function onLogin(email, password) {
 function onLoginOut() {
   setloggedIn(false)
   setEmailUser(null)
-  //navigate('/sign-in')
+  navigate('/sign-in')
   localStorage.removeItem('jwt')
 }
 
-// React.useEffect(() => {
-//   if (isloggedIn === true) {
-//     navigate('/')
-//   }
-// }, [isloggedIn, navigate])
+React.useEffect(() => {
+  if (isloggedIn === true) {
+    navigate('/')
+  }
+}, [isloggedIn, navigate])
 
   React.useEffect(() => {
     if (isloggedIn) 
@@ -188,13 +192,16 @@ function onLoginOut() {
   };
 
   const handleInfoTooltip = () => {
-    return setInfoTooltip(!isInfoTooltipOpen)
+    setInfoTooltip(!isInfoTooltipOpen)
+  }
+
+  const handleLogin = () => {
+    setloggedIn(true);
   }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <CurrentCard.Provider value={currentCards}>
-      <BrowserRouter>
         
       <div className="page">
         
@@ -246,10 +253,12 @@ function onLoginOut() {
             }
           />
 
-          <Route
+          {/* <Route
             path="*"
             element={<Navigate to={isloggedIn ? '/' : '/sign-in'} />}
-          />
+          /> */}
+
+        <Route path="*" element={isloggedIn ? <Navigate to="/" replace /> : <Navigate to="/sign-in" replace />} />
 
       </Routes>
 
@@ -281,7 +290,6 @@ function onLoginOut() {
       />
 
     </div>
-    </BrowserRouter>
     </CurrentCard.Provider>
     </CurrentUserContext.Provider>
   );

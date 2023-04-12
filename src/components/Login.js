@@ -1,13 +1,13 @@
 import React from "react";
-import {useNavigate} from 'react-router-dom';
-import useAuth from "../utils/auth";
+// import {useNavigate} from 'react-router-dom';
+// import useAuth from "../utils/auth";
 
-function Login(initialValue) {
+function Login({onLogin}) {
 
-  const [formValue, setFormValue] = React.useState(initialValue ?? "")
+  const [formValue, setFormValue] = React.useState("")
 
   const handleChange = (e) => {
-    const {name, value} = e.target.value;
+    const {name, value} = e.target;
 
     setFormValue({
       ...formValue,
@@ -15,22 +15,27 @@ function Login(initialValue) {
     });
   }
   
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formValue.email || !formValue.password){
-      return;
-    }
-    useAuth.loginUser(formValue.email, formValue.password)
-      .then((data) => {
-      if(data.jwt) {
-        setFormValue({email: '', password: ''});
-        navigate('/', {replace: true});
-      }
-      })
-      .catch(err => console.log(err));
+  function handleSubmit(evt) {
+    evt.preventDefault()
+    onLogin(formValue)
   }
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (!formValue.email || !formValue.password){
+  //     return;
+  //   }
+  //   useAuth.loginUser(formValue.email, formValue.password)
+  //     .then((data) => {
+  //     if(data.jwt) {
+  //       setFormValue({email: '', password: ''});
+  //       navigate('/', {replace: true});
+  //     }
+  //     })
+  //     .catch(err => console.log(err));
+  // }
 
 
   return(
