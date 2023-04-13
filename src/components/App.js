@@ -38,7 +38,7 @@ function App() {
   })
 
   const [isloggedIn, setloggedIn] = React.useState(false); // статус пользователя(вошел в систему или нет)
-  const [isEmailUser, setEmailUser] = React.useState(null);
+  const [isEmailUser, setEmailUser] = React.useState('');
 
   const navigate = useNavigate()
 
@@ -123,23 +123,24 @@ function onRegister(email, password) {
     .finally(handleInfoTooltip)
 }
 
-function onLogin(email, password) {
-  useAuth.loginUser(email, password)
-    .then((res) => {
-      localStorage.setItem('jwt', res.token)
-      setloggedIn(true)
-      setEmailUser(email)
-      navigate('/')
-    })
-    .catch((err) => {
-      setInfoToolTipData({
-        image: noSuccess, 
-        title: 'Что-то пошло не так! Попробуйте ещё раз.',
-      })
-      console.log(err);
-      handleInfoTooltip()
-    })
-}
+// function onLogin(email, password) {
+//   useAuth.loginUser(email, password)
+//   .then((data) => {
+//     console.log(data)
+//   if(data.token) {
+//     localStorage.setItem('jwt', data.token);
+//     navigate("/", {replace: true});
+//   }
+//   })
+//     .catch((err) => {
+//       setInfoToolTipData({
+//         image: noSuccess, 
+//         title: 'Что-то пошло не так! Попробуйте ещё раз.',
+//       })
+//       console.log(err);
+//       handleInfoTooltip()
+//     })
+// }
 
 function onLoginOut() {
   setloggedIn(false)
@@ -153,6 +154,22 @@ React.useEffect(() => {
     navigate('/')
   }
 }, [isloggedIn, navigate])
+
+React.useEffect(() => {
+  const jwt = localStorage.getItem('jwt')
+  if (jwt) {
+    useAuth.getToken(jwt)
+      .then((res) => {
+        if (res) {
+          setloggedIn(true)
+          setEmailUser(res.data.email)
+        }
+      })
+      .catch((error) => {
+        console.error('Error: ' + error)
+      })
+  }
+}, [])
 
   React.useEffect(() => {
     if (isloggedIn) 
@@ -195,8 +212,10 @@ React.useEffect(() => {
     setInfoTooltip(!isInfoTooltipOpen)
   }
 
-  const handleLogin = () => {
+  const handleLogin = (email) => {
+    console.log(email);
     setloggedIn(true);
+    setEmailUser(email);
   }
 
   return (
@@ -212,7 +231,7 @@ React.useEffect(() => {
             element={
               <>
                 <Header title="Регистрация" route="/sign-up" />
-                <Login onLogin={onLogin} />
+                <Login onLogin={handleLogin} />
               </>
             }
           />
@@ -247,6 +266,7 @@ React.useEffect(() => {
                   cards={currentCards}
                   onCardLike={handleCardLike}
                   onCardDelete={handleCardDelete}
+                  setEmailUser={setEmailUser}
                 />
                 <Footer />
               </>

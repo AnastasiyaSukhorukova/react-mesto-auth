@@ -1,11 +1,15 @@
 import React, {useState} from "react";
-import {Link} from 'react-router-dom';
-// import useAuth from "../utils/auth";
+import {Link, useNavigate} from 'react-router-dom';
+import useAuth from "../utils/auth";
 
 function Register({onRegister}) {
 
-  const [formValue, setFormValue] = useState("")
-  // const navigate = useNavigate();
+  const [formValue, setFormValue] = useState({
+    email: '',
+    password: ''
+  })
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -16,24 +20,17 @@ function Register({onRegister}) {
     });
   }
 
-// function handleSubmit(e) {
-//   // Запрещаем браузеру переходить по адресу формы
-//   e.preventDefault();
-
-//   if (formValue.password === formValue.confirmPassword){
-//     //const {password, email } = formValue;
-//     useAuth.registerUser(formValue.password, formValue.email)
-//     .then((res) => {
-//       navigate('/sign-in', {replace: true});
-//       }
-//     )
-//     .catch((err) => console.log(err));
-//   }
-// }
-
-function handleSubmit(evt) {
-  evt.preventDefault()
-  onRegister(formValue)
+function handleSubmit(e) {
+  // Запрещаем браузеру переходить по адресу формы
+  e.preventDefault();
+    useAuth.registerUser(formValue.email, formValue.password)
+    .then((res) => {
+      onRegister(formValue.email, formValue.password)
+      navigate('/sign-in', {replace: true});
+      }
+    )
+    .catch((err) => console.log(err));
+  
 }
 
   return(
@@ -45,6 +42,7 @@ function handleSubmit(evt) {
       <input 
         className="login__input"
         type="email"
+        name="email"
         placeholder="Email"
         value={formValue.email}
         onChange={handleChange}
@@ -54,6 +52,7 @@ function handleSubmit(evt) {
       <input
           className="login__input"
           type="password"
+          name="password"
           placeholder="Пароль"
           value={formValue.password}
           autoComplete="on"

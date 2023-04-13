@@ -37,17 +37,6 @@ function EditProfilePopup(props) {
       about
     });
   } 
-
-  function handleSubmit(e) {
-    // Запрещаем браузеру переходить по адресу формы
-    e.preventDefault();
-
-    // Передаём значения управляемых компонентов во внешний обработчик
-    props.onUpdateUser({
-      name,
-      about
-    });
-  }
   
   return(
     <PopupWithForm name="profile-popup" title="Редактировать профиль" isOpen={props.isOpen} onClose={props.onClose} textButton="Cохранить" onSubmit={handleSubmit}>

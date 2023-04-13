@@ -4,13 +4,6 @@ class Auth {
     this._headers = options.headers;
   }
 
-  _handleResponse(res) {
-    if(res.ok) {
-    return res.json();
-  }
-  return Promise.reject(`Ошибка: ${res.status}`)
-  }
-
   registerUser (email, password) {
     return fetch(`${this._url}/signup`, {
       method: 'POST',
@@ -39,12 +32,12 @@ class Auth {
     return fetch(`${this._url}/signin`,{
       method: 'POST',
       headers: this._headers,
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({email, password}),
     })
     .then((response => response.json()))
   .then((data) => {
-    if (data.jwt){
-      localStorage.setItem('jwt', data.jwt);
+    if (data.token){
+      localStorage.setItem('jwt', data.token);
       return data;
     }
   })
@@ -78,6 +71,7 @@ class Auth {
 const useAuth = new Auth({
   url: 'https://auth.nomoreparties.co',
   headers: {
+    'Accept': 'application/json',
     'Content-Type': "application/json"
   }
 })
