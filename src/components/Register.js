@@ -64,7 +64,6 @@ function handleSubmit(e) {
         <button 
         className="login__button"
         type="submit"
-        onSubmit={handleSubmit}
         >
           Зарегистрироваться
         </button>

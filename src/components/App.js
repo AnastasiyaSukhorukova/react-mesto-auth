@@ -24,7 +24,7 @@ function App() {
   const [isEditProfileClick, setEditProfileClick] = React.useState(false);
 
   const [isAddPlaceClick, setAddPlaceClick] = React.useState(false);
-  const [selectedCard, setselectedCard] = React.useState(null);
+  const [selectedCard, setSelectedCard] = React.useState(null);
 
   const [isInfoTooltipOpen, setInfoTooltip] = React.useState(false)
 
@@ -112,6 +112,7 @@ function onRegister(email, password) {
         title: 'Вы успешно зарегистрировались!',
       })
       navigate('/sign-in')
+      handleInfoTooltip()
     })
     .catch((err) => {
       setInfoToolTipData({
@@ -119,8 +120,9 @@ function onRegister(email, password) {
         title: 'Что-то пошло не так! Попробуйте ещё раз.',
       })
       console.log(err);
+      handleInfoTooltip()
     })
-    .finally(handleInfoTooltip)
+    // .finally(handleInfoTooltip)
 }
 
 function onLogin(email, password) {
@@ -189,7 +191,7 @@ React.useEffect(() => {
     setEditAvatarClick(false);
     setEditProfileClick(false);
     setAddPlaceClick(false);
-    setselectedCard(null);
+    setSelectedCard(null);
     setInfoTooltip(false);
   };
 
@@ -206,7 +208,7 @@ React.useEffect(() => {
   };
 
   const handleCardClick = (card) => {
-    setselectedCard(card);
+    setSelectedCard(card);
   };
 
   const handleInfoTooltip = () => {
