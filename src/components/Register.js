@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import {Link, useNavigate} from 'react-router-dom';
-import useAuth from "../utils/auth";
+import {Link} from 'react-router-dom';
+// import useAuth from "../utils/auth";
 
 function Register({onRegister}) {
 
@@ -9,7 +9,7 @@ function Register({onRegister}) {
     password: ''
   })
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -23,14 +23,7 @@ function Register({onRegister}) {
 function handleSubmit(e) {
   // Запрещаем браузеру переходить по адресу формы
   e.preventDefault();
-    useAuth.registerUser(formValue.email, formValue.password)
-    .then((res) => {
-      onRegister(formValue.email, formValue.password)
-      navigate('/sign-in', {replace: true});
-      }
-    )
-    .catch((err) => console.log(err));
-  
+  onRegister(formValue.email, formValue.password)
 }
 
   return(
