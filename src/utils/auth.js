@@ -4,76 +4,64 @@ class Auth {
     this._headers = options.headers;
   }
 
-  registerUser (email, password) {
+  _handleResponse(res) {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  }
+
+  registerUser(email, password) {
     return fetch(`${this._url}/signup`, {
-      method: 'POST',
+      method: "POST",
       headers: this._headers,
       body: JSON.stringify({
         email,
-        password
+        password,
+      }),
+    })
+      .then((res) => {
+        return res;
       })
-    })
-    .then((response) => {
-      try {
-        if (response.status === 200){
-          return response.json();
-        }
-      } catch(e){
-        return (e)
-      }
-    })
-    .then((res) => {
-      return res;
-    })
-    .catch((err) => console.log(err));
-  }; 
+      .then(this._handleResponse);
+  }
 
-  loginUser (email, password) {
-    return fetch(`${this._url}/signin`,{
-      method: 'POST',
+  loginUser(email, password) {
+    return fetch(`${this._url}/signin`, {
+      method: "POST",
       headers: this._headers,
-      body: JSON.stringify({email, password}),
+      body: JSON.stringify({ email, password }),
     })
-    .then((response => response.json()))
-  .then((data) => {
-    if (data.token){
-      localStorage.setItem('jwt', data.token);
-      return data;
-    }
-  })
-  .catch(err => console.log(err))
-}; 
+      .then(this._handleResponse)
+      .then((data) => {
+        if (data.token) {
+          localStorage.setItem("jwt", data.token);
+          return data;
+        }
+      });
+  }
 
-  getToken (jwt) {
-    return fetch(`${this._url}/users/me`,{
-      method: 'GET',
+  getToken(jwt) {
+    return fetch(`${this._url}/users/me`, {
+      method: "GET",
       headers: {
         headers: this._headers,
         Authorization: `Bearer ${jwt}`,
       },
     })
-    .then((response) => {
-      try {
-        if (response.status === 200){
-          return response.json();
-        }
-      } catch(e){
-        return (e)
-      }
-    })
-    .then((res) => {
-      return res;
-    })
-    .catch((err) => console.log(err));
+      .then((res) => {
+        return res;
+      })
+      .then(this._handleResponse);
   }
 }
 
 const useAuth = new Auth({
-  url: 'https://auth.nomoreparties.co',
+  url: "https://auth.nomoreparties.co",
   headers: {
-    'Accept': 'application/json',
-    'Content-Type': "application/json"
-  }
-})
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+});
 
 export default useAuth;

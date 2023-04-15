@@ -1,8 +1,8 @@
 import React from "react";
 import logo from "../logo.svg";
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
-function Header({email, title, route, onClick}) {
+function Header({ email, title, route, onClick }) {
   return (
     <header className="header">
       <img className="logo" src={logo} alt="Логотип сайта mesto" />

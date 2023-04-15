@@ -1,43 +1,41 @@
 import React from "react";
 
-function Login({onLogin}) {
-
+function Login({ onLogin }) {
   const [formValue, setFormValue] = React.useState({
-    email: '',
-    password: ''
-  })
+    email: "",
+    password: "",
+  });
 
   const handleChange = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
 
     setFormValue({
       ...formValue,
-      [name]: value
+      [name]: value,
     });
-  }
+  };
 
   function handleSubmit(evt) {
-    evt.preventDefault()
-    onLogin(formValue.email, formValue.password)
+    evt.preventDefault();
+    onLogin(formValue.email, formValue.password);
   }
 
-  return(
+  return (
     <section className="login__container">
       <h2 className="login__title">Вход</h2>
 
       <form className="login__form" onSubmit={handleSubmit}>
+        <input
+          className="login__input"
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formValue.email}
+          onChange={(e) => handleChange(e)}
+          required
+        ></input>
 
-      <input 
-        className="login__input"
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={formValue.email}
-        onChange={(e) => handleChange(e)}
-        required>
-      </input>
-
-      <input
+        <input
           className="login__input"
           type="password"
           name="password"
@@ -49,15 +47,12 @@ function Login({onLogin}) {
           required
         />
 
-        <button 
-        className="login__button"
-        type="submit"
-        >
+        <button className="login__button" type="submit">
           Войти
         </button>
-        </form>
+      </form>
     </section>
-  )
+  );
 }
 
 export default Login;
