@@ -27,7 +27,6 @@ function Login({onLogin}) {
     }
     useAuth.loginUser(formValue.email, formValue.password)
       .then((data) => {
-        console.log(data)
       if(data.token) {
         setFormValue({email: '', password: ''});
         localStorage.setItem('jwt', data.token);
@@ -69,7 +68,6 @@ function Login({onLogin}) {
         <button 
         className="login__button"
         type="submit"
-        // onSubmit={handleSubmit}
         >
           Войти
         </button>

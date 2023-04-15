@@ -132,6 +132,7 @@ function onRegister(email, password) {
 //     navigate("/", {replace: true});
 //   }
 //   })
+// вот это надо засунуть куда-то в другое место, возможно сделать отдельную функцию...
 //     .catch((err) => {
 //       setInfoToolTipData({
 //         image: noSuccess, 
@@ -213,7 +214,6 @@ React.useEffect(() => {
   }
 
   const handleLogin = (email) => {
-    console.log(email);
     setloggedIn(true);
     setEmailUser(email);
   }
