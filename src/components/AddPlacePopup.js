@@ -1,5 +1,6 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
+import usePopupClose from "../hooks/usePopupClose";
 
 function AddPlacePopup(props) {
   const [name, setTitle] = React.useState("");
@@ -24,6 +25,14 @@ function AddPlacePopup(props) {
       link,
     });
   }
+
+  React.useEffect(() => {
+    setTitle('');
+    setPlace('');
+  }, [props.isOpen]);
+
+  usePopupClose(props.isOpen, props.onClose)
+
   return (
     <PopupWithForm
       name="popup-add"

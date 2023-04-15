@@ -1,6 +1,7 @@
 import React from "react";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import PopupWithForm from "./PopupWithForm";
+import usePopupClose from "../hooks/usePopupClose";
 
 function EditProfilePopup(props) {
   const [name, setName] = React.useState("");
@@ -36,6 +37,8 @@ function EditProfilePopup(props) {
       about,
     });
   }
+
+  usePopupClose(props.isOpen, props.onClose)
 
   return (
     <PopupWithForm

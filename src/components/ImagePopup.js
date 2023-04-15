@@ -1,4 +1,5 @@
 function ImagePopup(props) {
+
   return (
     <section
       className={`popup popup-image ${props.card ? "popup_opened" : " "}`}

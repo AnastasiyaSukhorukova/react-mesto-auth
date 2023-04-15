@@ -31,7 +31,7 @@ function Login({ onLogin }) {
           name="email"
           placeholder="Email"
           value={formValue.email}
-          onChange={(e) => handleChange(e)}
+          onChange={handleChange}
           required
         ></input>
 
@@ -43,7 +43,7 @@ function Login({ onLogin }) {
           value={formValue.password}
           autoComplete="on"
           minLength="5"
-          onChange={(e) => handleChange(e)}
+          onChange={handleChange}
           required
         />
 

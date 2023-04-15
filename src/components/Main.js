@@ -15,7 +15,6 @@ function Main({
   const currentCardsData = React.useContext(CurrentCard);
 
   return (
-    <>
       <main>
         <section className="profile">
           <div className="profile__avatar-container" onClick={onEditAvatar}>
@@ -43,7 +42,6 @@ function Main({
             onClick={onAddPlace}
           />
         </section>
-      </main>
 
       <section className="elements">
         {currentCardsData.map((card) => {
@@ -61,7 +59,7 @@ function Main({
           );
         })}
       </section>
-    </>
+    </main>
   );
 }
 
