@@ -1,6 +1,4 @@
 import React from "react";
-import {useNavigate} from 'react-router-dom';
-import useAuth from "../utils/auth";
 
 function Login({onLogin}) {
 
@@ -17,24 +15,10 @@ function Login({onLogin}) {
       [name]: value
     });
   }
-  
-  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formValue.email || !formValue.password){
-      return;
-    }
-    useAuth.loginUser(formValue.email, formValue.password)
-      .then((data) => {
-      if(data.token) {
-        setFormValue({email: '', password: ''});
-        localStorage.setItem('jwt', data.token);
-        onLogin();
-        navigate("/", {replace: true});
-      }
-      })
-      .catch(err => console.log(err));
+  function handleSubmit(evt) {
+    evt.preventDefault()
+    onLogin(formValue.email, formValue.password)
   }
 
   return(

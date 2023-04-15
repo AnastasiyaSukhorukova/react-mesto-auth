@@ -16,7 +16,7 @@ import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
 import success from "../images/success.svg";
-import noSuccess from "../images/noSuccess.svg"
+import failed from "../images/noSuccess.svg"
 
 
 function App() {
@@ -115,7 +115,7 @@ function onRegister(email, password) {
     })
     .catch((err) => {
       setInfoToolTipData({
-        image: noSuccess, 
+        image: failed, 
         title: 'Что-то пошло не так! Попробуйте ещё раз.',
       })
       console.log(err);
@@ -123,25 +123,25 @@ function onRegister(email, password) {
     .finally(handleInfoTooltip)
 }
 
-// function onLogin(email, password) {
-//   useAuth.loginUser(email, password)
-//   .then((data) => {
-//     console.log(data)
-//   if(data.token) {
-//     localStorage.setItem('jwt', data.token);
-//     navigate("/", {replace: true});
-//   }
-//   })
-// вот это надо засунуть куда-то в другое место, возможно сделать отдельную функцию...
-//     .catch((err) => {
-//       setInfoToolTipData({
-//         image: noSuccess, 
-//         title: 'Что-то пошло не так! Попробуйте ещё раз.',
-//       })
-//       console.log(err);
-//       handleInfoTooltip()
-//     })
-// }
+function onLogin(email, password) {
+  useAuth.loginUser(email, password)
+  .then((data) => {
+    if(data.token) {
+    localStorage.setItem('jwt', data.token)
+    setloggedIn(true);
+    setEmailUser(email);
+    navigate('/')
+    }
+  })
+    .catch((err) => {
+      setInfoToolTipData({
+        image: failed, 
+        title: 'Что-то пошло не так! Попробуйте ещё раз.',
+      })
+      console.log(err);
+      handleInfoTooltip()
+    })
+}
 
 function onLoginOut() {
   setloggedIn(false)
@@ -213,11 +213,6 @@ React.useEffect(() => {
     setInfoTooltip(!isInfoTooltipOpen)
   }
 
-  const handleLogin = (email) => {
-    setloggedIn(true);
-    setEmailUser(email);
-  }
-
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <CurrentCard.Provider value={currentCards}>
@@ -231,7 +226,7 @@ React.useEffect(() => {
             element={
               <>
                 <Header title="Регистрация" route="/sign-up" />
-                <Login onLogin={handleLogin} />
+                <Login onLogin={onLogin} />
               </>
             }
           />
@@ -272,11 +267,6 @@ React.useEffect(() => {
               </>
             }
           />
-
-          {/* <Route
-            path="*"
-            element={<Navigate to={isloggedIn ? '/' : '/sign-in'} />}
-          /> */}
 
         <Route path="*" element={isloggedIn ? <Navigate to="/" replace /> : <Navigate to="/sign-in" replace />} />
 
