@@ -1,6 +1,5 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
-import usePopupClose from "../hooks/usePopupClose";
 
 function EditAvatarPopup(props) {
   const avatarRef = React.useRef();
@@ -12,8 +11,6 @@ function EditAvatarPopup(props) {
       avatar: avatarRef.current.value,
     });
   }
-
-  usePopupClose(props.isOpen, props.onClose)
 
   return (
     <PopupWithForm

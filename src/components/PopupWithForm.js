@@ -1,4 +1,5 @@
 import React from "react";
+import usePopupClose from "../hooks/usePopupClose";
 
 function PopupWithForm({
   name,
@@ -9,6 +10,8 @@ function PopupWithForm({
   textButton,
   onSubmit,
 }) {
+  usePopupClose(isOpen, onClose)
+  
   return (
     <div
       className={`popup popup_type_${name} ${isOpen ? "popup_opened" : " "}`}
